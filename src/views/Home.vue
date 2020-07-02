@@ -24,6 +24,9 @@
         <swiper-slide>
           <div class="banner_img banner_img-3"></div>
         </swiper-slide>
+        <swiper-slide>
+          <div class="banner_img banner_img-4"></div>
+        </swiper-slide>
         <div class="swiper-button-next swiper-button-custom" slot="button-next"></div>
       </swiper>
 
@@ -159,15 +162,20 @@ export default {
 }
 
 .banner_img-1 {
-  background-image: url('../assets/images/banner-1.jpg');
+  background-image: url('../assets/images/banner_1.jpg');
 }
 
 .banner_img-2 {
-  background-image: url('../assets/images/banner-2.jpg');
+  background-image: url('../assets/images/banner_2.jpg');
+  background-position: bottom;
 }
 
 .banner_img-3 {
-  background-image: url('../assets/images/banner-3.jpg');
+  background-image: url('../assets/images/banner_3.jpg');
+}
+
+.banner_img-4 {
+  background-image: url('../assets/images/banner_4.jpg');
 }
 
 .banner_cover {
