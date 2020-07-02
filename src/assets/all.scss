@@ -1,0 +1,402 @@
+@import './_variable.scss';
+@import './_mixin.scss';
+
+// reset
+
+* {
+  box-sizing:border-box;
+  -moz-box-sizing:border-box;
+}
+
+body {
+  position: relative;
+  font-family: $font-normal;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: $dark;
+  text-decoration: none;
+}
+
+input, textarea {
+  background-color: $white;
+  border: 1px solid $muted;
+  line-height: 1;
+  outline: 0;
+}
+
+textarea {
+  resize: none;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+// 去除 Chrome input[type="number"] 上下箭頭
+input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+// 去除 Firefox input[type="number"] 上下箭頭
+input[type="number"]{
+  -moz-appearance: textfield;
+}
+
+// btn modules
+
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  transition: all 0.4s ease;
+  text-align: center;
+  color: $dark;
+}
+
+.btn-m {
+  padding: 0.5rem 1rem;
+  font-size: $font-s;
+}
+
+.btn-l {
+  padding: 0.5rem 1.5rem;
+  font-size: $font-m;
+}
+
+.btn-primary {
+  background-color: $primary;
+  border: 1px solid $primary;
+  &:hover, &:focus {
+    background-color: darken($primary, 10%);
+    border: 1px solid $primary;
+    color: $white;
+  }
+  &:active {
+    box-shadow: inset 0px 0px 5px 1px darken($primary, 20%);
+  }
+}
+
+.btn-outline-primary {
+  border: 1px solid $primary;
+  &:hover, &:focus {
+    background-color: $primary;
+    border: 1px solid $primary;
+  }
+  &:active {
+    box-shadow: inset 0px 0px 5px 1px darken($primary, 20%);
+  }
+}
+
+.btn-dark {
+  background-color: $dark;
+  border: 1px solid $dark;
+  color: $white;
+  &:hover, &:focus {
+    background-color: lighten($dark, 10%);
+  }
+  &:active {
+    box-shadow: inset 0px 0px 5px 1px darken($dark, 20%);
+  }
+}
+
+.btn-outline-dark {
+  border: 1px solid $dark;
+  &:hover, &:focus {
+    background-color: $dark;
+    color: $white;
+  }
+  &:active {
+    box-shadow: inset 0px 0px 5px 1px darken($dark, 20%);
+  }
+}
+
+// grid module
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.col-4 {
+  width: 32%;
+  margin-right: 2%;
+  margin-bottom: 2%;
+  &:nth-child(3n) {
+    margin-right: 0;
+  }
+  @include mobile-horizontal {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+.col-6 {
+  width: 49%;
+  margin-right: 2%;
+  &:nth-child(2n) {
+    margin-right: 0;
+  }
+  @include pad {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+// container
+
+.container {
+  max-width: $breakpoint-xxl;
+  margin: 0 auto;
+}
+
+// 常用 css
+
+.text-right {
+  text-align: right;
+}
+
+.text-danger {
+  color: $danger;
+}
+
+.text-success {
+  color: $success;
+}
+
+// effect
+
+.effect {
+  display: block;
+  position: relative;
+  min-height: 20rem;
+  width: 100%;
+  cursor: pointer;
+  &:hover {
+    .effect_rect {
+      background-color: rgba($dark, 0.5);
+      &:before {
+        transform: skewX(-45deg) translateX(80rem);
+        transition: all 1s ease-in-out;
+      }
+    }
+  }
+}
+
+.effect_img {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.effect_rect {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: rgba($dark, 0.3);
+  transition: all 0.4s ease-in-out;
+  color: $white;
+  font-size: $font-l;
+  font-weight: bold;
+  overflow: hidden;
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -160%;
+    height: 100%;
+    width: 50%;
+    background-color: rgba($white, 0.3);
+    transform: skewX(-50deg) translateX(0);
+    @include mobile-horizontal {
+      display: none;
+    }
+  }
+}
+
+.effect_rect_text:after {
+  content: "";
+  display: block;
+  height: 1px;
+  width: 2rem;
+  margin: 1rem auto 0;
+  background-color: $white;
+}
+
+// card
+
+.card {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+  @include desktop {
+    flex-direction: column;
+    align-items: center;
+  }
+  .effect {
+    max-width: 25rem;
+    @include desktop {
+      max-width: 100%;
+
+    }
+  }
+  .effect_rect:before {
+    display: none;
+  }
+}
+
+// card card_body
+
+.card_body {
+  flex: 1;
+  margin: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card_title {
+  margin: 0 0 1rem 0;
+  @include desktop {
+    margin: 1.5rem 0;
+    text-align: center;
+  }
+  font-size: $font-l;
+}
+
+.card_info {
+  display: flex;
+  flex-wrap: wrap;
+  @include desktop {
+    margin-bottom: 1rem;
+    padding: 0 3rem;
+  }
+  @include mobile-m  {
+    flex-direction: column;
+    text-align: center;
+  }
+  li {
+    margin-bottom: 1rem;
+    width: 50%;
+    @include mobile-m  {
+      width: 100%;
+    }
+  }
+}
+
+.card_facilities {
+  display: flex;
+  flex-wrap: wrap;
+  @include desktop {
+    justify-content: center;
+  }
+  li {
+    width: 5rem;
+    height: 5rem;
+    background-color: $primary;
+    text-align: center;
+    line-height: 5rem;
+    margin-right: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: $font-xl;
+  }
+}
+
+// card card_footer
+
+.card_footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2rem 0;
+  text-align: right;
+  ul {
+      margin-bottom: 1rem;
+    }
+}
+
+.card_price {
+  font-weight: bold;
+  span {
+    font-size: $font-xl;
+  }
+}
+
+// form
+
+.form-group {
+  margin-bottom: 0.5rem;
+  label {
+    display: inline-block;
+    margin: 0.5rem 0 0.25rem;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+// loading
+
+.loading {
+  font-size: $font-xxl;
+  font-family: $font-title;
+  font-weight: bold;
+  color: $primary;
+}
+
+// swiper 按鈕設定
+
+.swiper-button-custom {
+  padding: 1.5rem;
+  border: 2px solid $white;
+  border-radius: $arc-l;
+  color: $white;
+  &:hover, &:focus {
+    color: $primary;
+    border: 2px solid $primary;
+  }
+  &:after {
+    font-size: $font-xl;
+  }
+}
+
+.swiper-pagination-custom {
+  span {
+    background-color: $white;
+    width: 1rem;
+    height: 1rem;
+    opacity: 0.5;
+    cursor: pointer;
+    outline: none;
+    &:hover, &:focus {
+      background-color: $primary;
+    }
+  }
+  .swiper-pagination-bullet-active {
+    opacity: 1;
+  }
+}

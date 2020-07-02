@@ -1,0 +1,42 @@
+
+
+// font-family
+
+$font-normal: 'Noto Sans TC', 'Barlow', "微軟正黑體", "Microsoft JhengHei", sans-serif;
+$font-title: 'Anton', sans-serif;
+
+// font-size
+
+$font-s: 1rem;
+$font-m: 1.25rem;
+$font-l: 1.5rem;
+$font-xl: 2rem;
+$font-xxl: 2.5rem;
+$font-xxxl: 5rem;
+
+// color
+
+$primary:    #D1C8C3;
+$secondary:  #F8F1EA;
+$muted:      #8E8E8E;
+$success:    #86C166;
+$info:       #17A2B8;
+$warning:    #FFDC8E;
+$danger:     #e65f48;
+$dark:       #343a40;
+$white:      #ffffff;
+
+// border-radius
+
+$arc-m: 5px;
+$arc-l: 50%;
+
+// breakpoint
+
+$breakpoint-xxs: 320px;
+$breakpoint-xs: 480px;
+$breakpoint-s: 568px;
+$breakpoint-m: 767px;
+$breakpoint-l: 768px;
+$breakpoint-xl: 960px;
+$breakpoint-xxl: 1140px;
