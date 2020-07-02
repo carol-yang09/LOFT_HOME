@@ -176,6 +176,10 @@ input[type="number"]{
   color: $success;
 }
 
+.rounded {
+  border-radius: $arc-s;
+}
+
 // effect
 
 .effect {

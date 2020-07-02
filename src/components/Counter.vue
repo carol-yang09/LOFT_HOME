@@ -62,6 +62,7 @@ export default {
   height: 100%;
   min-width: 10rem;
   padding: 0.25rem 0.5rem;
+  border-radius: $arc-s;
   cursor: context-menu;
 }
 
@@ -78,6 +79,7 @@ export default {
   bottom: 0;
   padding: 0 0.5rem;
   background-color: $dark;
+  border-radius: $arc-s;
   color: $white;
   line-height: 2.25rem;
 }

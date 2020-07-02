@@ -116,7 +116,7 @@
         <Counter counter-name="Kids" v-bind:number="kids"  v-on:number="countKids"
         ></Counter>
 
-        <a href="#" class="btn btn-m btn-dark"
+        <a href="#" class="btn btn-m btn-dark rounded"
          @click.prevent="bookRoom(room.id, room)">
           Booking
         </a>
@@ -461,6 +461,7 @@ export default {
   height: 100%;
   padding: 0.25rem 0.5rem;
   text-align: center;
+  border-radius: $arc-s;
 }
 
 >>> .calendar_wrap {

@@ -86,6 +86,7 @@ export default {
 .alert_wrap {
   padding: 3rem;
   background-color: $white;
+  border-radius: $arc-m;
   text-align: center;
   h2 {
     margin-bottom: 2.5rem;

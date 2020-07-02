@@ -174,8 +174,9 @@ export default {
   }
 }
 
-@include pad {
-  .nav_btn {
+.nav_btn {
+  border-radius: $arc-m;
+  @include pad {
     display: none;
   }
 }

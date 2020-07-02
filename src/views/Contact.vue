@@ -41,7 +41,7 @@
         <span class="text-danger">{{ errors[0] }}</span>
       </validation-provider>
 
-      <button type="submit" class="btn btn-l btn-primary" @click.prevent="leaveMessage()">
+      <button type="submit" class="btn btn-l btn-primary rounded" @click.prevent="leaveMessage()">
         送出
       </button>
 

@@ -42,7 +42,7 @@
         ></Counter>
         <Counter counter-name="Kids" v-bind:number="kids"  v-on:number="countKids"
         ></Counter>
-        <a href="#" class="btn btn-m btn-dark" @click.prevent="searchRoom()">Search</a>
+        <a href="#" class="btn btn-m btn-dark toolbar_btn" @click.prevent="searchRoom()">Search</a>
       </form>
     </div>
 
@@ -87,10 +87,12 @@
               <li class="card_price">假日每晚：<span>{{ room.normalDayPrice | currency }}</span></li>
             </ul>
             <div>
-              <router-link :to="`rooms/${room.id}`" class="btn btn-m btn-outline-dark">
+              <router-link :to="`rooms/${room.id}`"
+               class="btn btn-m btn-outline-dark rounded">
                 MORE +
               </router-link>
-              <a href="#" class="btn btn-m btn-dark" @click.prevent="bookRoom(room.id)">
+              <a href="#" class="btn btn-m btn-dark rounded"
+               @click.prevent="bookRoom(room.id)">
                 BOOK NOW
               </a>
             </div>
@@ -405,6 +407,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 0.25rem 0.5rem;
+  border-radius: $arc-s;
   text-align: center;
 }
 

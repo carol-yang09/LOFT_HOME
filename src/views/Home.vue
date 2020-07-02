@@ -205,6 +205,7 @@ export default {
     display: block;
   }
   a {
+    border-radius: $arc-m;
     @include mobile-horizontal {
       display: none;
     }

@@ -25,14 +25,14 @@
           <validation-provider rules="required" name="姓名" v-slot="{ errors }" tag="div"
            class="col-6 form-group">
             <label for="name"><span class="text-danger">*</span>真實姓名</label>
-            <input type="text" placeholder="ex: 王小明" v-model="name">
+            <input type="text" class="rounded" placeholder="ex: 王小明" v-model="name">
             <span class="text-danger">{{ errors[0] }}</span>
           </validation-provider>
 
           <validation-provider rules="phone|required" name="電話" v-slot="{ errors }" tag="div"
            class="col-6 form-group">
             <label for="phone"><span class="text-danger">*</span>手機號碼</label>
-            <input type="number" placeholder="ex: 0955xxxxxx" v-model="phone">
+            <input type="number" class="rounded" placeholder="ex: 0955xxxxxx" v-model="phone">
             <span class="text-danger">{{ errors[0] }}</span>
           </validation-provider>
 
@@ -376,6 +376,10 @@ export default {
   right: 10px;
 }
 
+>>> .calendar_input {
+  border-radius: $arc-s;
+}
+
 >>> .calendar_calendar {
   bottom: 2rem;
   @include mobile-horizontal {
@@ -415,6 +419,7 @@ export default {
   margin-left: 1rem;
   margin-bottom: 1.5rem;
   min-width: 10rem;
+  border-radius: $arc-s;
   @include mobile-s {
     margin-bottom: 0.5rem;
   }
