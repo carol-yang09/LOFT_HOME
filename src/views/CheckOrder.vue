@@ -98,7 +98,7 @@
         </table>
         <div class="info_btn">
           <router-link to="/rooms" class="btn btn-m btn-outline-dark">BACK &#60;</router-link>
-          <button type="submit" class="btn btn-m btn-dark" @click.prevent="booking">OK!</button>
+          <button type="submit" class="btn btn-m btn-dark" @click.prevent="booking()">OK!</button>
         </div>
       </div>
 
@@ -181,7 +181,16 @@ export default {
     // 訂房
     booking() {
       const vm = this;
-      if (!vm.checkIn || !vm.checkOut) { return; }
+      if (!vm.checkIn || !vm.checkOut) {
+        const alert = {
+          isShow: true,
+          title: '錯誤!',
+          content: '請輸入完整資訊，謝謝您！',
+          to: '',
+        };
+        vm.$bus.$emit('alert', alert, 'danger');
+        return;
+      }
       this.isLoading = true;
       vm.$refs.form.validate().then((success) => {
         if (success) {
