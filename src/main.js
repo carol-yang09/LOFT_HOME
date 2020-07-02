@@ -1,6 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
+import Vuex from 'vuex';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
@@ -13,6 +14,7 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 
 import App from './App';
 import router from './router';
+import store from './store';
 import './bus';
 import currencyFilter from './filters/currency';
 
@@ -22,6 +24,10 @@ Vue.config.productionTip = false;
 
 Vue.use(VueAxios, axios);
 axios.defaults.withcredentials = true;
+
+// Vuex 設定
+
+Vue.use(Vuex);
 
 // vee-validate 設定
 
@@ -50,52 +56,6 @@ Vue.use(VueAwesomeSwiper);
 // vue-loading-overlay 設定
 
 Vue.component('Loading', Loading);
-// Vue.use('Loading', Loading, {
-//   color: '#000000',
-// });
-
-// Vue.component('Loading', Loading, {
-//   canCancel: false,
-//   color: '#000000',
-//   loader: 'dots',
-//   width: 50,
-//   height: 50,
-//   backgroundColor: '#ffffff',
-//   isFullPage: true,
-//   opacity: 0.8,
-// });
-// Vue.component('Loading', {
-//   canCancel: false,
-//   color: '#000000',
-//   // loader: 'dots', //spinner/dots/bars
-//   width: 50,
-//   height: 50,
-//   backgroundColor: '#000000',
-//   isFullPage: true,
-//   opacity: 0.8,
-// });
-
-// Vue.use(Loading, {
-//   canCancel: false,
-//   color: '#000000',
-//   loader: 'dots',
-//   width: 50,
-//   height: 50,
-//   backgroundColor: '#ffffff',
-//   isFullPage: true,
-//   opacity: 0.8,
-// });
-
-// Vue.use(Loading, {
-//   canCancel: false,
-//   color: '#000000',
-//   loader: 'dots',
-//   width: 50,
-//   height: 50,
-//   backgroundColor: '#ffffff',
-//   isFullPage: true,
-//   opacity: 0.8,
-// });
 
 // 自訂的 filter
 
@@ -105,6 +65,7 @@ Vue.filter('currency', currencyFilter);
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>',
 });
