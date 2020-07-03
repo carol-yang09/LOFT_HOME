@@ -51,6 +51,14 @@ export default new Router({
           path: '/checkorder',
           name: 'CheckOrder',
           component: CheckOrder,
+          // 只有從 Rooms 及 Room 頁面才可進入 Checkout 頁面
+          beforeEnter(to, from, next) {
+            if (from.path === 'Rooms' || from.name === 'Room') {
+              next();
+            } else {
+              next(false);
+            }
+          },
         },
       ],
     },
