@@ -111,7 +111,7 @@ export default ({
   },
   getters: {
     rooms: state => state.rooms,
-    room: state => state.roomv,
+    room: state => state.room,
     roomItemBooked: state => state.roomItemBooked,
     imageActive: state => state.imageActive,
     roomsDetil: state => state.roomsDetil,
