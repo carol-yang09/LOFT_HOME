@@ -223,7 +223,6 @@ export default {
 }
 
 .banner {
-  display: flex;
   justify-content: center;
   position: relative;
   min-height: calc(100vh - 5.5rem);
@@ -317,7 +316,8 @@ export default {
 
 .scroll-btn {
   position: absolute;
-  bottom: 1rem;
+  left: 49%;
+  bottom: 0;
   text-align: center;
   padding-bottom: 1rem;
   z-index: 3;
