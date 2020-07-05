@@ -36,6 +36,9 @@ export default {
     },
   },
   watch: {
+    number(newVal) {
+      this.myNumber = newVal; // 監聽外層 number
+    },
     // 監聽內部 myNumbar
     // 動態傳給 外部的 number
     myNumber(newVal) {
