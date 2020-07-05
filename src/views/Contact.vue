@@ -72,8 +72,9 @@ export default {
             title: '傳送成功!',
             content: '您的訊息我們已收到，謝謝您的回饋！',
             to: '/',
+            status: 'success',
           };
-          vm.$bus.$emit('alert', alert);
+          this.$store.dispatch('alertModules/openAlert', alert);
         }
       });
     },

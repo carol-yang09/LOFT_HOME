@@ -326,6 +326,11 @@ input[type="number"]{
     margin-right: 0.5rem;
     margin-top: 0.5rem;
     font-size: $font-xl;
+    @include mobile-l {
+      width: 4rem;
+      height: 4rem;
+      line-height: 4rem;
+    }
   }
 }
 
@@ -403,4 +408,65 @@ input[type="number"]{
   .swiper-pagination-bullet-active {
     opacity: 1;
   }
+}
+
+
+// vuejs-datepicker calendar 設定
+
+.calendar {
+  position: relative;
+  @include desktop-s {
+    margin-bottom: 1rem;
+  }
+}
+
+.calendar_icon {
+  position: absolute;
+  top: 20%;
+  right: 10px;
+}
+
+.calendar_input {
+  width: 100%;
+  height: 100%;
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+  border-radius: $arc-s;
+}
+
+.calendar_wrap {
+  height: 100%;
+  > div:first-child {
+    height: 100%;
+  }
+}
+
+// vuejs-datepicker 日曆樣式設定
+
+// 更改 日期 hover 樣式
+.calendar_calendar span.cell:not(.blank):not(.disabled).day:hover {
+  border: 1px solid $dark;
+}
+
+// 更改 日期被選擇 的樣式
+.calendar_calendar span.cell.selected {
+  color: $white;
+  background-color: $dark;
+  &:hover {
+    background-color: rgba($dark, 0.3);
+  }
+}
+
+// 更改 日期 disabled 且 highlighted 的樣式
+.calendar_calendar span.cell.highlighted.disabled {
+  background-color: transparent;
+  color: #ddd;
+}
+
+// 更改 日期 highlighted 樣式
+.calendar_calendar .day.highlighted:not(.disabled) {
+  color: #ddd;
+  pointer-events: none;
+  text-decoration: line-through;
+  background-color: transparent;
 }

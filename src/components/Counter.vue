@@ -36,11 +36,10 @@ export default {
     },
   },
   watch: {
-    number(newVal) {
-      this.myNumber = newVal; // 監聽外部傳入的 number
-    },
+    // 監聽內部 myNumbar
+    // 動態傳給 外部的 number
     myNumber(newVal) {
-      this.$emit('number', newVal); // 監聽內部 myNumbar 傳給外部的 number
+      this.$emit('number', newVal);
     },
   },
 };
@@ -60,9 +59,9 @@ export default {
 .counter_input {
   width: 100%;
   height: 100%;
-  min-width: 10rem;
   padding: 0.25rem 0.5rem;
   border-radius: $arc-s;
+  text-align: center;
   cursor: context-menu;
 }
 

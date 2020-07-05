@@ -1,21 +1,8 @@
 <template>
   <div>
-    <loading :active.sync="isLoading" :is-full-page="true"
-     :z-index="999" :background-color="'#000'">
-      <template slot="before">
-        <span class="loading">LOFT</span>
-      </template>
-      <template slot="default">
-        <span class="loading"><i class="fas fa-bahai fa-spin"></i></span>
-      </template>
-      <template slot="after">
-        <span class="loading">HOME</span>
-      </template>
-    </loading>
-
     <!-- room -->
     <div class="container room">
-      <div class="silder" :style="{'background-image': 'url(' + imagesActive + ')'}">
+      <div class="silder" :style="{'background-image': 'url(' + imageActive + ')'}">
         <h2 class="silder_title">{{ room.name }}</h2>
         <ul class="silder_price">
           <li>平日每晚：<span class="">{{ room.normalDayPrice | currency }}</span></li>
@@ -24,7 +11,7 @@
       </div>
       <ul class="silder-control">
         <li class="silder-control_img" v-for="(img, key) in room.imageUrl" :key="key"
-        :style="{'background-image': 'url(' + img + ')'}" @click.prevent="imagesActive = img">
+        :style="{'background-image': 'url(' + img + ')'}" @click.prevent="imageActive = img">
         </li>
       </ul>
       <div class="row room_intro">
@@ -87,7 +74,7 @@
         <div class="calendar">
           <datepicker placeholder="CheckIn" v-model="checkIn"
             :disabled-dates="disabledStart"
-            :format="'dd/MM/yyyy'"
+            :format="'yyyy/MM/dd'"
             :calendar-class="'calendar_calendar'"
             :wrapper-class="'calendar_wrap'"
             :input-class="'calendar_input'"
@@ -100,7 +87,7 @@
         <div class="calendar">
           <datepicker placeholder="CheckOut" v-model="checkOut"
             :disabled-dates="disabledEnd"
-            :format="'dd/MM/yyyy'"
+            :format="'yyyy/MM/dd'"
             :calendar-class="'calendar_calendar'"
             :wrapper-class="'calendar_wrap'"
             :input-class="'calendar_input'"
@@ -126,6 +113,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Datepicker from 'vuejs-datepicker';
 import Counter from '@/components/Counter';
 import dayjs from 'dayjs';
@@ -135,18 +123,7 @@ dayjs().format();
 export default {
   data() {
     return {
-      room: [],
       roomId: '',
-      roomItemBooked: [], // 已預約日期
-      // vue-loading-overlay 預設開啟
-      isLoading: true,
-      // vuejs-datepicker 日曆 highlighted 設定
-      highlighted: {
-        dates: this.roomItemBooked,
-        includeDisabled: true,
-      },
-      // silder
-      imagesActive: '',
       // 訂房資料
       checkIn: '',
       checkOut: '',
@@ -175,26 +152,7 @@ export default {
   },
   methods: {
     getRoomItem(id) {
-      const vm = this;
-      const apiUrl = `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${id}`;
-      vm.$http.get(apiUrl, {
-        headers: {
-          Authorization: process.env.API_TOKEN,
-          accept: 'application/json',
-        },
-      }).then((res) => {
-        vm.room = res.data.room[0];
-        vm.imagesActive = res.data.room[0].imageUrl[0];
-        // 已預約日期
-        res.data.booking.forEach((item) => {
-          vm.roomItemBooked.push(new Date(dayjs(item.date)));
-        });
-        this.isLoading = false;
-        vm.$bus.$emit('message', '資料載入成功');
-      }).catch(() => {
-        this.isLoading = false;
-        vm.$bus.$emit('message', '糟糕~ 出錯了!', 'danger');
-      });
+      this.$store.dispatch('roomsModules/getRoomItem', { id, form: 'room' });
     },
     // Count
     countKids(num) {
@@ -223,53 +181,38 @@ export default {
           title: '錯誤!',
           content: '請輸入完整資訊，謝謝您！',
           to: '',
+          status: 'danger',
         };
-        vm.$bus.$emit('alert', alert, 'danger');
+        this.$store.dispatch('alertModules/openAlert', alert);
       }
+    },
+    updateDisabledEnd(newVal) {
+      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
     },
   },
   computed: {
-    // vuejs-datepicker - CheckIn disabled
-    disabledStart() {
-      const vm = this;
-      // 取得今日 23:59:59
-      const limitStart = new Date(dayjs().endOf('day'));
-      // 取得今天加 3 個月
-      const limitEnd = new Date(dayjs().endOf('day').add(3, 'month'));
-
-      return {
-        to: limitStart, // 從 ... 以前 disabled
-        from: limitEnd, // 從 ... 之後 disabled
-        dates: vm.roomItemBooked.map(item => item), // 已預約日期
-      };
+    imageActive: {
+      // 取值
+      get() {
+        return this.$store.state.roomsModules.imageActive;
+      },
+      // 設值
+      set(newVal) {
+        return this.$store.commit('roomsModules/IMAGEACTIVE', newVal);
+      },
     },
-    // vuejs-datepicker - CheckOut disabled
-    disabledEnd() {
-      const vm = this;
-      let limitStart = '';
-
-      if (vm.checkIn) {
-        // 若 checkIn 有值 則取得 checkIn 天
-        limitStart = new Date(dayjs(vm.checkIn).startOf('day'));
-      } else {
-        // 若 checkIn 無值 則取得 今日
-        limitStart = new Date(dayjs().endOf('day'));
-      }
-      // 取得今天加 3 個月
-      const limitEnd = new Date(dayjs().endOf('day').add(3, 'month'));
-
-      return {
-        to: limitStart, // 從 ... 以前 disabled
-        from: limitEnd, // 從 ... 之後 disabled
-        dates: vm.roomItemBooked.map(item => item), // 已預約日期
-      };
-    },
+    ...mapGetters('roomsModules', ['room', 'roomItemBooked']),
+    ...mapGetters('calendarModules', ['disabledStart', 'disabledEnd', 'highlighted']),
   },
   watch: {
     // 監聽
-    checkIn(newValue) {
-      // checkIn 若大於 checkOut 則把 checkOut 清空
-      if (new Date(newValue) > new Date(this.checkOut)) {
+    checkIn(newVal, oldVal) {
+      // 若 checkIn 更新值，則將 checkIn 傳給 updateDisabledEnd 更新  disabledEnd
+      if (newVal !== oldVal) {
+        this.updateDisabledEnd(newVal);
+      }
+      // 若 checkIn 若大於 checkOut 則把 checkOut 清空
+      if (new Date(newVal) > new Date(this.checkOut)) {
         this.checkOut = '';
       }
     },
@@ -281,6 +224,8 @@ export default {
   created() {
     const vm = this;
     vm.getRoomItem(vm.$route.params.roomId);
+    // 初始化 disabledEnd
+    vm.updateDisabledEnd();
   },
 };
 </script>
@@ -441,38 +386,15 @@ export default {
   }
 }
 
+// counter
+
+>>> .counter_input {
+  min-width: 10rem;
+}
+
 // calendar
-
-.calendar {
-  position: relative;
-  @include desktop-s {
-    margin-bottom: 1rem;
-  }
-}
-
-.calendar_icon {
-  position: absolute;
-  top: 20%;
-  right: 10px;
-}
-
->>> .calendar_input {
-  width: 100%;
-  height: 100%;
-  padding: 0.25rem 0.5rem;
-  text-align: center;
-  border-radius: $arc-s;
-}
-
->>> .calendar_wrap {
-  height: 100%;
-  > div:first-child {
-    height: 100%;
-  }
-}
 
 >>> .calendar_calendar {
   bottom: 2.25rem;
 }
-
 </style>

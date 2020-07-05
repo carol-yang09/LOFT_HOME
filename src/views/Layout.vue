@@ -1,5 +1,18 @@
 <template>
   <div>
+    <loading :active.sync="isLoading" :is-full-page="true"
+     :z-index="999" :background-color="'#000'">
+      <template slot="before">
+        <span class="loading">LOFT</span>
+      </template>
+      <template slot="default">
+        <span class="loading"><i class="fas fa-bahai fa-spin"></i></span>
+      </template>
+      <template slot="after">
+        <span class="loading">HOME</span>
+      </template>
+    </loading>
+
     <!-- Navbar -->
     <div class="navbar-wrap">
       <nav class="container navbar">
@@ -69,6 +82,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Alert from '@/components/Alert';
 import Message from '@/components/Message';
 
@@ -77,6 +91,9 @@ export default {
     return {
       isMenuOpen: false,
     };
+  },
+  computed: {
+    ...mapGetters(['isLoading']),
   },
   components: {
     Alert,

@@ -1,18 +1,5 @@
 <template>
   <div>
-    <loading :active.sync="isLoading" :is-full-page="true"
-     :z-index="999" :background-color="'#000'">
-      <template slot="before">
-        <span class="loading">LOFT</span>
-      </template>
-      <template slot="default">
-        <span class="loading"><i class="fas fa-bahai fa-spin"></i></span>
-      </template>
-      <template slot="after">
-        <span class="loading">HOME</span>
-      </template>
-    </loading>
-
     <div class="banner">
       <swiper class="swiper" :options="swiperOption">
         <swiper-slide>
@@ -30,12 +17,56 @@
         <div class="swiper-button-next swiper-button-custom" slot="button-next"></div>
       </swiper>
 
-      <div class="banner_cover">
-        <div class="banner_cover_item">
-          <h2>LOFT<span>HOME</span></h2>
-          <router-link to="/rooms" class="btn btn-l btn-dark">
-            Go Booking
-          </router-link>
+      <!-- toolbar -->
+      <div class="toolbar_wrap">
+        <div class="toolbar-vertical">
+          <form action="" class="container toolbar_form">
+            <div>
+              <label for="checkin">CheckIn</label>
+              <div class="calendar">
+                <datepicker placeholder="CheckIn" v-model="checkIn"
+                  :disabled-dates="disabledStart"
+                  :format="'yyyy/MM/dd'"
+                  :calendar-class="'calendar_calendar'"
+                  :wrapper-class="'calendar_wrap'"
+                  :input-class="'calendar_input'"
+                  :required="true"
+                ></datepicker>
+                <span class="calendar_icon"><i class="far fa-calendar-alt"></i></span>
+              </div>
+            </div>
+
+            <div>
+              <label for="checkout">CheckOut</label>
+              <div class="calendar">
+                <datepicker placeholder="CheckOut" v-model="checkOut"
+                  :disabled-dates="disabledEnd"
+                  :format="'yyyy/MM/dd'"
+                  :calendar-class="'calendar_calendar'"
+                  :wrapper-class="'calendar_wrap'"
+                  :input-class="'calendar_input'"
+                  :required="true"
+                ></datepicker>
+                <span class="calendar_icon"><i class="far fa-calendar-alt"></i></span>
+              </div>
+            </div>
+
+            <div class="toolbar_counter">
+              <div>
+                <label for="adults">Adults</label>
+                <Counter v-bind:number="adults" v-on:number="countAdults"
+                ></Counter>
+              </div>
+              <div>
+                <label for="kids">Kids</label>
+                <Counter v-bind:number="kids"  v-on:number="countKids"
+                ></Counter>
+              </div>
+            </div>
+
+            <a href="#" class="btn btn-l btn-outline-dark toolbar_btn"
+             @click.prevent="searchRouter()">Search</a>
+          </form>
         </div>
       </div>
 
@@ -69,14 +100,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import Datepicker from 'vuejs-datepicker';
+import Counter from '@/components/Counter';
 import $ from 'jquery';
 
 export default {
   data() {
     return {
-      rooms: [],
-      // vue-loading-overlay 預設開啟
-      isLoading: true,
+      // 訂房資料
+      checkIn: '',
+      checkOut: '',
+      kids: 0,
+      adults: 0,
       // vue-awesome-swiper 設定
       swiperOption: {
         slidesPerView: 1,
@@ -101,26 +137,69 @@ export default {
       }, 1000);
     },
     getRooms() {
-      const vm = this;
-      const apiUrl = 'https://challenge.thef2e.com/api/thef2e2019/stage6/rooms';
-      vm.$http.get(apiUrl, {
-        headers: {
-          Authorization: process.env.API_TOKEN,
-          accept: 'application/json',
-        },
-      }).then((response) => {
-        vm.rooms = response.data.items;
-        this.isLoading = false;
-        vm.$bus.$emit('message', '資料載入成功');
-      }).catch(() => {
-        this.isLoading = false;
-        vm.$bus.$emit('message', '糟糕~ 出錯了!', 'danger');
-      });
+      this.$store.dispatch('roomsModules/getRooms', { form: 'home' });
     },
+    // Count
+    countKids(num) {
+      this.kids = num;
+    },
+    countAdults(num) {
+      this.adults = num;
+    },
+    updateDisabledEnd(newVal) {
+      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
+    },
+    searchRouter() {
+      const vm = this;
+      const sumNum = Number(vm.adults) + Number(vm.kids);
+      if (sumNum > 0 && vm.checkIn && vm.checkOut) {
+        vm.$router.push({
+          path: '/rooms',
+          query: {
+            checkIn: vm.checkIn.getTime(),
+            checkOut: vm.checkOut.getTime(),
+            adults: vm.adults,
+            kids: vm.kids,
+          },
+        });
+      } else {
+        const alert = {
+          isShow: true,
+          title: '錯誤!',
+          content: '請輸入完整資訊，謝謝您！',
+          to: '',
+          status: 'danger',
+        };
+        this.$store.dispatch('alertModules/openAlert', alert);
+      }
+    },
+  },
+  computed: {
+    ...mapGetters('roomsModules', ['rooms']),
+    ...mapGetters('calendarModules', ['disabledStart', 'disabledEnd']),
+  },
+  watch: {
+    // 監聽
+    checkIn(newVal, oldVal) {
+      // 若 checkIn 更新值，則將 checkIn 傳給 updateDisabledEnd 更新  disabledEnd
+      if (newVal !== oldVal) {
+        this.updateDisabledEnd(newVal);
+      }
+      // 若 checkIn 若大於 checkOut 則把 checkOut 清空
+      if (new Date(newVal) > new Date(this.checkOut)) {
+        this.checkOut = '';
+      }
+    },
+  },
+  components: {
+    Datepicker,
+    Counter,
   },
   created() {
     const vm = this;
     vm.getRooms();
+    // 初始化 disabledEnd
+    vm.updateDisabledEnd();
   },
 };
 </script>
@@ -144,6 +223,8 @@ export default {
 }
 
 .banner {
+  display: flex;
+  justify-content: center;
   position: relative;
   min-height: calc(100vh - 5.5rem);
   @include mobile-horizontal {
@@ -176,47 +257,67 @@ export default {
 
 .banner_img-4 {
   background-image: url('../assets/images/banner_4.jpg');
+  background-position: bottom;
 }
 
-.banner_cover {
+.toolbar_wrap {
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  align-items: center;
   position: absolute;
   top: 0;
   bottom: 0;
-  right: 50%;
   left: 0;
+  right: 50%;
   z-index: 2;
-  background-color: rgba($primary, 0.5);
-  text-align: center;
+  background-color: rgba($primary, 0.3);
   @include mobile-horizontal {
+    align-items: flex-start;
     right: 0;
   }
 }
 
-.banner_cover_item {
-  color: $white;
-  font-size: $font-xxxl;
-  h2 {
-    margin: 0;
+.toolbar-vertical {
+  max-width: 20rem;
+  background-color: rgba($white, 0.5);
+  padding: 2.5rem 3rem 1.5rem;
+}
+
+.toolbar_form {
+  text-align: center;
+  > div {
+    margin-bottom: 1rem;
   }
-  span {
+  label {
     display: block;
-  }
-  a {
-    border-radius: $arc-m;
-    @include mobile-horizontal {
-      display: none;
-    }
+    margin-bottom: 0.25rem;
+    text-align: left;
   }
 }
+
+.toolbar_counter {
+  display: flex;
+  justify-content: space-between;
+}
+
+// counter
+
+>>> .counter_input {
+  min-width: 6rem;
+}
+
+.toolbar_btn {
+  margin: 1rem;
+  @include desktop {
+    margin: 0;
+  }
+}
+
+// banner scroll-btn
 
 .scroll-btn {
   position: absolute;
   bottom: 1rem;
-  right: 0;
-  left: 0;
   text-align: center;
   padding-bottom: 1rem;
   z-index: 3;

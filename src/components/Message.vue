@@ -13,43 +13,26 @@
     </ul>
   </div>
 </template>
+
 <script>
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
   name: 'Message',
   data() {
-    return {
-      messages: [],
-    };
+    return {};
   },
   methods: {
     updateMessage(message, status) {
-      const timestamp = Math.floor(new Date() / 1000);
-      this.messages.push({
-        message,
-        status,
-        timestamp,
-      });
-      this.removeMessageWithTiming(timestamp);
+      this.$store.dispatch('messageModules/updateMessage', { message, status });
     },
-    removeMessage(num) {
-      this.messages.splice(num, 1);
+    removeMessage(index) {
+      this.$store.dispatch('messageModules/removeMessage', index);
     },
-    removeMessageWithTiming(timestamp) {
-      const vm = this;
-      setTimeout(() => {
-        vm.messages.forEach((item, index) => {
-          if (item.timestamp === timestamp) {
-            vm.messages.splice(index, 1);
-          }
-        });
-      }, 2000);
-    },
+    ...mapActions('messageModules', ['removeMessageWithTiming']),
   },
-  created() {
-    const vm = this;
-    vm.$bus.$on('message', (message, status = 'success') => {
-      vm.updateMessage(message, status);
-    });
+  computed: {
+    ...mapGetters('messageModules', ['messages']),
   },
 };
 </script>

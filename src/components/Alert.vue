@@ -3,62 +3,32 @@
     <div class="alert_wrap">
       <h2>
         <span class="alert_icon"
-         :class="{'text-danger': status == 'danger', 'text-success': status == 'success'}">
-          <i class="far fa-check-circle" v-if="status == 'success'"></i>
-          <i class="far fa-times-circle" v-if="status == 'danger'"></i>
+         :class="{'text-danger': alert.status == 'danger',
+         'text-success': alert.status == 'success'}">
+          <i class="far fa-check-circle" v-if="alert.status == 'success'"></i>
+          <i class="far fa-times-circle" v-if="alert.status == 'danger'"></i>
         </span>
         {{ alert.title }}
       </h2>
       <p>{{ alert.content }}</p>
-      <button class="btn btn-m btn-dark" @click.prevent="closeAlert()">OK !</button>
+      <button class="btn btn-m btn-dark" @click.prevent="closeAlert(alert.to)">OK !</button>
     </div>
   </div>
 </template>
 
 <script>
-import $ from 'jquery';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'Alert',
   data() {
-    return {
-      alert: {
-        isShow: false,
-        title: '',
-        content: '',
-        to: '',
-      },
-      status: '',
-    };
+    return {};
   },
   methods: {
-    closeAlert() {
-      const vm = this;
-      vm.alert.isShow = false;
-      $('body').css('overflow', 'auto');
-      if (vm.alert.to) {
-        vm.$router.push(vm.alert.to);
-      }
-    },
-    resetAlert() {
-      const vm = this;
-      vm.alert = {
-        isShow: false,
-        title: '',
-        content: '',
-        to: '',
-      };
-    },
+    ...mapActions('alertModules', ['closeAlert', 'openAlert']),
   },
-  created() {
-    const vm = this;
-    vm.resetAlert();
-
-    vm.$bus.$on('alert', (alert, status = 'success') => {
-      vm.alert = alert;
-      vm.status = status;
-      $('body').css('overflow', 'hidden');
-    });
+  computed: {
+    ...mapGetters('alertModules', ['alert']),
   },
 };
 </script>

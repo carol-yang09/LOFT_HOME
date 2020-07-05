@@ -1,18 +1,5 @@
 <template>
   <div class="container row checkorder">
-    <loading :active.sync="isLoading" :is-full-page="true"
-     :z-index="999" :background-color="'#000'">
-      <template slot="before">
-        <span class="loading">LOFT</span>
-      </template>
-      <template slot="default">
-        <span class="loading"><i class="fas fa-bahai fa-spin"></i></span>
-      </template>
-      <template slot="after">
-        <span class="loading">HOME</span>
-      </template>
-    </loading>
-
     <div class="row">
       <div class="col-6">
         <h2>Almost done!</h2>
@@ -41,7 +28,7 @@
             <div class="calendar">
               <datepicker placeholder="CheckIn" v-model="checkIn"
                :disabled-dates="disabledStart"
-               :format="'dd/MM/yyyy'"
+               :format="'yyyy/MM/dd'"
                :calendar-class="'calendar_calendar'"
                :wrapper-class="'calendar_wrap'"
                :input-class="'calendar_input'"
@@ -57,7 +44,7 @@
             <div class="calendar">
               <datepicker placeholder="CheckOut" v-model="checkOut"
                :disabled-dates="disabledEnd"
-               :format="'dd/MM/yyyy'"
+               :format="'yyyy/MM/dd'"
                :calendar-class="'calendar_calendar'"
                :wrapper-class="'calendar_wrap'"
                :input-class="'calendar_input'"
@@ -107,6 +94,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import $ from 'jquery';
 import dayjs from 'dayjs';
 import Datepicker from 'vuejs-datepicker';
@@ -116,16 +104,7 @@ dayjs().format();
 export default {
   data() {
     return {
-      room: [],
       roomId: '',
-      roomItemBooked: [], // 已預約日期
-      // vue-loading-overlay 預設開啟
-      isLoading: true,
-      // vuejs-datepicker 日曆 highlighted 設定
-      highlighted: {
-        dates: this.roomBooked,
-        includeDisabled: true,
-      },
       // 訂房資料
       checkIn: '',
       checkOut: '',
@@ -139,44 +118,26 @@ export default {
   methods: {
     // 取得此房型資訊
     getRoomItem(id) {
-      const vm = this;
-      const apiUrl = `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${id}`;
-      vm.$http.get(apiUrl, {
-        headers: {
-          Authorization: process.env.API_TOKEN,
-          accept: 'application/json',
-        },
-      }).then((res) => {
-        vm.room = res.data.room[0];
-        // 已預約日期
-        res.data.booking.forEach((item) => {
-          vm.roomItemBooked.push(new Date(dayjs(item.date)));
-        });
-        this.isLoading = false;
-        vm.$bus.$emit('message', '資料載入成功');
-      }).catch(() => {
-        this.isLoading = false;
-        const alert = {
-          isShow: true,
-          title: '錯誤!',
-          content: '資料錯誤，請重新載入，謝謝您！',
-          to: '/',
-        };
-        vm.$bus.$emit('alert', alert, 'danger');
-      });
+      this.$store.dispatch('roomsModules/getRoomItem', { id, form: 'checkout' });
     },
     // 計算假日與平日
     calHolidaysandWeekdays() {
       const vm = this;
       vm.holidays = 0;
       vm.weekdays = 0;
-      vm.calDateArray.forEach((item) => {
-        if (new Date(item).getDay() === 0 || new Date(item).getDay() === 6) {
-          vm.holidays += 1;
-        } else {
-          vm.weekdays += 1;
-        }
-      });
+      if (vm.checkIn && vm.checkOut) {
+        this.$store.dispatch('searchModules/updateSelectDateArray', {
+          checkIn: vm.checkIn,
+          checkOut: vm.checkOut,
+        });
+        vm.selectDateArray.forEach((item) => {
+          if (new Date(item).getDay() === 0 || new Date(item).getDay() === 6) {
+            vm.holidays += 1;
+          } else {
+            vm.weekdays += 1;
+          }
+        });
+      }
     },
     // 訂房
     booking() {
@@ -187,11 +148,11 @@ export default {
           title: '錯誤!',
           content: '請輸入完整資訊，謝謝您！',
           to: '',
+          status: 'danger',
         };
-        vm.$bus.$emit('alert', alert, 'danger');
+        this.$store.dispatch('alertModules/openAlert', alert);
         return;
       }
-      this.isLoading = true;
       vm.$refs.form.validate().then((success) => {
         if (success) {
           const apiUrl = `https://challenge.thef2e.com/api/thef2e2019/stage6/room/${vm.roomId}`;
@@ -199,9 +160,9 @@ export default {
           const data = {
             name: vm.name,
             tel: vm.phone,
-            date: vm.calDateArray,
+            date: vm.selectDateArray,
           };
-
+          vm.$store.dispatch('updateLoading', true);
           vm.$http.post(apiUrl, data, {
             headers: {
               Authorization: process.env.API_TOKEN,
@@ -212,90 +173,49 @@ export default {
               isShow: true,
               title: '預定成功!',
               content: '您的預訂已完成，詳細訂房資訊已發送簡訊至您的手機，謝謝您！',
-              to: '/rooms',
+              to: '/',
+              status: 'success',
             };
-            vm.$bus.$emit('alert', alert);
-            this.isLoading = false;
+            this.$store.dispatch('alertModules/openAlert', alert);
+            vm.$store.dispatch('updateLoading', false);
           }).catch(() => {
             const alert = {
               isShow: true,
               title: '預定失敗!',
               content: '您的預訂失敗，請再重新預定，謝謝您！',
               to: '/rooms',
+              status: 'danger',
             };
-            vm.$bus.$emit('alert', alert, 'danger');
-            this.isLoading = false;
+            this.$store.dispatch('alertModules/openAlert', alert);
+            vm.$store.dispatch('updateLoading', false);
           });
-        } else {
-          this.isLoading = false;
         }
       });
     },
+    updateDisabledEnd(newVal) {
+      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
+    },
   },
   computed: {
-    // vuejs-datepicker - CheckIn disabled
-    disabledStart() {
-      const vm = this;
-      // 取得今日 23:59:59
-      const limitStart = new Date(dayjs().endOf('day'));
-      // 取得今天加 3 個月
-      const limitEnd = new Date(dayjs().endOf('day').add(3, 'month'));
-
-      return {
-        to: limitStart, // 從 ... 以前 disabled
-        from: limitEnd, // 從 ... 之後 disabled
-        dates: vm.roomItemBooked.map(item => item), // 已預約日期
-      };
-    },
-    // vuejs-datepicker - CheckOut disabled
-    disabledEnd() {
-      const vm = this;
-      let limitStart = '';
-
-      if (vm.checkIn) {
-        // 若 checkIn 有值 則取得 checkIn 天
-        limitStart = new Date(dayjs(vm.checkIn).startOf('day'));
-      } else {
-        // 若 checkIn 無值 則取得 今日
-        limitStart = new Date(dayjs().endOf('day'));
-      }
-      // 取得今天加 3 個月
-      const limitEnd = new Date(dayjs().endOf('day').add(3, 'month'));
-
-      return {
-        to: limitStart, // 從 ... 以前 disabled
-        from: limitEnd, // 從 ... 之後 disabled
-        dates: vm.roomItemBooked.map(item => item), // 已預約日期
-      };
-    },
-    // 將選擇的日期儲存為陣列
-    calDateArray() {
-      const vm = this;
-      const dateArray = [];
-      if (vm.checkIn && vm.checkOut) {
-        const start = vm.checkIn.getTime();
-        const end = vm.checkOut.getTime();
-        const oneDayLong = 1000 * 60 * 60 * 24;
-        for (let t = start; t <= end; t += oneDayLong) {
-          const time = dayjs(t).startOf('day').format('YYYY-MM-DD');
-          dateArray.push(time);
-        }
-      }
-      return dateArray;
-    },
+    ...mapGetters('roomsModules', ['room', 'roomItemBooked']),
+    ...mapGetters('calendarModules', ['disabledStart', 'disabledEnd', 'highlighted']),
+    ...mapGetters('searchModules', ['selectDateArray']),
   },
   watch: {
-    checkIn(newValue) {
-      const vm = this;
-      // checkIn 若大於 checkOut 則把 checkOut、holidays、weekdays 清空
-      if (new Date(newValue) > new Date(vm.checkOut)) {
-        vm.checkOut = '';
-        vm.holidays = 0;
-        vm.weekdays = 0;
+    // 監聽
+    checkIn(newVal, oldVal) {
+      // 若 checkIn 更新值，則將 checkIn 傳給 updateDisabledEnd 更新  disabledEnd
+      if (newVal !== oldVal) {
+        this.updateDisabledEnd(newVal);
+      }
+      // 若 checkIn 大於 checkOut 則把 checkOut、holidays、weekdays 清空
+      if (new Date(newVal) > new Date(this.checkOut)) {
+        this.checkOut = '';
+        this.holidays = 0;
+        this.weekdays = 0;
         $('.calendar_err').css('display', 'block');
       } else {
-        // 計算平日周末
-        vm.calHolidaysandWeekdays();
+        this.calHolidaysandWeekdays();
       }
     },
     checkOut() {
@@ -318,6 +238,8 @@ export default {
     }
     vm.roomId = vm.$route.query.roomId;
     vm.getRoomItem(vm.roomId);
+    // 初始化 disabledEnd
+    vm.updateDisabledEnd();
   },
 };
 </script>
@@ -338,6 +260,9 @@ export default {
     text-align: center;
     padding: 1rem 2rem;
   }
+  @include mobile-l {
+    padding: 1rem 1rem;
+  }
   p {
     margin: 0.5rem 0;
   }
@@ -348,6 +273,10 @@ export default {
   font-size: $font-l;
   font-weight: bold;
   text-decoration: underline;
+  @include mobile-horizontal {
+    display: block;
+    margin: 1rem;
+  }
 }
 
 // checkorder_form
@@ -366,25 +295,14 @@ export default {
 
 // calendar
 
-.calendar {
-  position: relative;
-}
-
-.calendar_icon {
-  position: absolute;
-  top: 20%;
-  right: 10px;
-}
-
->>> .calendar_input {
-  border-radius: $arc-s;
+@include desktop-s {
+  .calendar {
+    margin-bottom: 0;
+  }
 }
 
 >>> .calendar_calendar {
   bottom: 2rem;
-  @include mobile-horizontal {
-    bottom: auto;
-  }
 }
 
 // checkorder_info
@@ -409,6 +327,9 @@ export default {
   tfoot {
     font-size: $font-xl;
     font-weight: bold;
+    td:first-child {
+      width: 50%;
+    }
   }
   td {
     padding: 0.25rem;
