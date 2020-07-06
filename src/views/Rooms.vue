@@ -131,7 +131,7 @@ export default {
   },
   methods: {
     getRooms() {
-      this.$store.dispatch('roomsModules/getRooms', { form: 'rooms' });
+      this.$store.dispatch('roomsModules/getRooms');
     },
     // Count
     countKids(num) {

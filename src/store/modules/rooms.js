@@ -6,9 +6,6 @@ dayjs().format();
 export default ({
   namespaced: true,
   state: {
-    // home 頁面
-    rooms: [],
-    roomsImages: [],
     // room、checkout 頁面
     room: [],
     roomItemBooked: [], // 已預約日期
@@ -19,7 +16,7 @@ export default ({
     roomsBooked: [],
   },
   actions: {
-    getRooms(context, payload) {
+    getRooms(context) {
       const apiUrl = 'https://challenge.thef2e.com/api/thef2e2019/stage6/rooms';
       context.commit('LOADING', true, { root: true });
       axios.get(apiUrl, {
@@ -28,20 +25,14 @@ export default ({
           accept: 'application/json',
         },
       }).then((res) => {
-        if (payload.form === 'home') {
-          context.commit('ROOMS', res.data.items);
-          context.commit('LOADING', false, { root: true });
-          context.dispatch('messageModules/updateMessage', { message: '資料載入成功', status: 'success' }, { root: true });
-        } else if (payload.form === 'rooms') {
-          // 重置 roomsDetil、roomsBooked
-          context.commit('RESET_ROOMSDETIL');
-          context.commit('RESET_ROOMSBOOKED');
+        // 重置 roomsDetil、roomsBooked
+        context.commit('RESET_ROOMSDETIL');
+        context.commit('RESET_ROOMSBOOKED');
 
-          res.data.items.forEach((item) => {
-            context.dispatch('getRoomItem', { id: item.id, form: 'rooms' });
-          });
-          context.dispatch('messageModules/updateMessage', { message: '資料載入成功', status: 'success' }, { root: true });
-        }
+        res.data.items.forEach((item) => {
+          context.dispatch('getRoomItem', { id: item.id, form: 'rooms' });
+        });
+        context.dispatch('messageModules/updateMessage', { message: '資料載入成功', status: 'success' }, { root: true });
       }).catch(() => {
         context.commit('LOADING', false, { root: true });
         context.dispatch('messageModules/updateMessage', { message: '糟糕~ 出錯了!', status: 'danger' }, { root: true });
@@ -79,10 +70,6 @@ export default ({
     },
   },
   mutations: {
-    // home 頁面
-    ROOMS(state, status) {
-      state.rooms = status;
-    },
     // room、checkout 頁面
     ROOM(state, status) {
       state.room = status;
@@ -108,9 +95,15 @@ export default ({
     PUSH_ROOMSBOOKED(state, status) {
       state.roomsBooked.push(status);
     },
+    RESET_ROOMSSTORE(state) {
+      state.room = [];
+      state.roomItemBooked = [];
+      state.imageActive = '';
+      state.roomsDetil = [];
+      state.roomsBooked = [];
+    },
   },
   getters: {
-    rooms: state => state.rooms,
     room: state => state.room,
     roomItemBooked: state => state.roomItemBooked,
     imageActive: state => state.imageActive,

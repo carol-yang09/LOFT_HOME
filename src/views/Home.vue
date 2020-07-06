@@ -81,7 +81,7 @@
       <div class="room_type">
         <h3>Room Type</h3>
         <div class="row">
-          <router-link href="#" class="col-4" v-for=" room in rooms" :key="room.id"
+          <router-link href="#" class="col-4" v-for=" room in roomsDetil" :key="room.id"
            :to="`rooms/${room.id}`">
             <div class="effect">
               <div class="effect_img"
@@ -137,7 +137,7 @@ export default {
       }, 1000);
     },
     getRooms() {
-      this.$store.dispatch('roomsModules/getRooms', { form: 'home' });
+      this.$store.dispatch('roomsModules/getRooms');
     },
     // Count
     countKids(num) {
@@ -175,7 +175,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters('roomsModules', ['rooms']),
+    ...mapGetters('roomsModules', ['roomsDetil', 'roomsBooked']),
     ...mapGetters('calendarModules', ['disabledStart', 'disabledEnd']),
   },
   watch: {
