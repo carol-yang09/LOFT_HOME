@@ -1,6 +1,8 @@
 <template>
   <div>
+    <!-- banner -->
     <div class="banner">
+      <!-- swiper -->
       <swiper class="swiper" :options="swiperOption">
         <swiper-slide>
           <div class="banner_img banner_img-1"></div>
@@ -70,6 +72,7 @@
         </div>
       </div>
 
+      <!-- scroll-btn -->
       <div class="scroll-btn">
         <a href="" @click.prevent="scroll()">
           Scroll<span><i class="fas fa-chevron-down"></i></span>
@@ -81,7 +84,7 @@
       <div class="room_type">
         <h3>Room Type</h3>
         <div class="row">
-          <router-link href="#" class="col-4" v-for=" room in roomsDetil" :key="room.id"
+          <router-link href="#" class="col-4" v-for="room in rooms" :key="room.id"
            :to="`rooms/${room.id}`">
             <div class="effect">
               <div class="effect_img"
@@ -131,14 +134,6 @@ export default {
     };
   },
   methods: {
-    scroll() {
-      $('html, body').animate({
-        scrollTop: $('.banner').height(),
-      }, 1000);
-    },
-    getRooms() {
-      this.$store.dispatch('roomsModules/getRooms');
-    },
     // Count
     countKids(num) {
       this.kids = num;
@@ -146,9 +141,13 @@ export default {
     countAdults(num) {
       this.adults = num;
     },
+    getRooms() {
+      this.$store.dispatch('roomsModules/getRooms', { form: 'home' });
+    },
     updateDisabledEnd(newVal) {
       this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
     },
+    // search 後轉到 Rooms 頁面
     searchRouter() {
       const vm = this;
       const sumNum = Number(vm.adults) + Number(vm.kids);
@@ -173,15 +172,21 @@ export default {
         this.$store.dispatch('alertModules/openAlert', alert);
       }
     },
+    // 按下 scroll-btn 滾動效果
+    scroll() {
+      $('html, body').animate({
+        scrollTop: $('.banner').height(),
+      }, 1000);
+    },
   },
   computed: {
-    ...mapGetters('roomsModules', ['roomsDetil', 'roomsBooked']),
+    ...mapGetters('roomsModules', ['rooms']),
     ...mapGetters('calendarModules', ['disabledStart', 'disabledEnd']),
   },
   watch: {
     // 監聽
     checkIn(newVal, oldVal) {
-      // 若 checkIn 更新值，則將 checkIn 傳給 updateDisabledEnd 更新  disabledEnd
+      // 若 checkIn 更新值，則將 checkIn 傳給 updateDisabledEnd 更新 disabledEnd
       if (newVal !== oldVal) {
         this.updateDisabledEnd(newVal);
       }
@@ -198,8 +203,6 @@ export default {
   created() {
     const vm = this;
     vm.getRooms();
-    // 初始化 disabledEnd
-    vm.updateDisabledEnd();
   },
 };
 </script>

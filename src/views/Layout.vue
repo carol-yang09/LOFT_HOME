@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Loading -->
     <loading :active.sync="isLoading" :is-full-page="true"
      :z-index="999" :background-color="'#000'">
       <template slot="before">

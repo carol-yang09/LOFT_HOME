@@ -61,7 +61,12 @@ export default ({
       });
     },
     resetSearch(context) {
-      context.commit('RESET_SEARCHINFO');
+      context.commit('SEARCHINFO', {
+        isShow: false,
+        checkIn: '',
+        checkOut: '',
+        sumNum: '',
+      });
       context.commit('SELECTDATEARRAY', []);
       context.commit('UNAVAILABLEROOM', []);
     },
@@ -72,14 +77,6 @@ export default ({
     },
     UNAVAILABLEROOM(state, status) {
       state.unavailableRoom = status;
-    },
-    RESET_SEARCHINFO(state) {
-      state.searchInfo = {
-        isShow: false,
-        checkIn: '',
-        checkOut: '',
-        sumNum: '',
-      };
     },
     SEARCHINFO(state, status) {
       state.searchInfo = status;

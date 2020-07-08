@@ -37,6 +37,13 @@ export default ({
         from: new Date(dayjs().endOf('day').add(3, 'month')), // 從 今天加 3 個月 之後 disabled
       });
     },
+    resetCalendar(context) {
+      context.commit('DISABLEDEND', {
+        to: new Date(dayjs().endOf('day')),
+        from: new Date(dayjs().endOf('day').add(3, 'month')),
+      });
+      context.commit('HIGHLIGHTED', []);
+    },
   },
   mutations: {
     DISABLEDEND(state, status) {

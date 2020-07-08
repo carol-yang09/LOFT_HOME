@@ -118,7 +118,10 @@ export default {
   methods: {
     // 取得此房型資訊
     getRoomItem(id) {
-      this.$store.dispatch('roomsModules/getRoomItem', { id, form: 'checkout' });
+      this.$store.dispatch('roomsModules/getRoomItem', id);
+    },
+    updateDisabledEnd(newVal) {
+      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
     },
     // 計算假日與平日
     calHolidaysandWeekdays() {
@@ -192,9 +195,6 @@ export default {
         }
       });
     },
-    updateDisabledEnd(newVal) {
-      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
-    },
   },
   computed: {
     ...mapGetters('roomsModules', ['room', 'roomItemBooked']),
@@ -238,8 +238,6 @@ export default {
     }
     vm.roomId = vm.$route.query.roomId;
     vm.getRoomItem(vm.roomId);
-    // 初始化 disabledEnd
-    vm.updateDisabledEnd();
   },
 };
 </script>

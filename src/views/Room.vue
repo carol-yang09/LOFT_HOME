@@ -151,15 +151,18 @@ export default {
     };
   },
   methods: {
-    getRoomItem(id) {
-      this.$store.dispatch('roomsModules/getRoomItem', { id, form: 'room' });
-    },
     // Count
     countKids(num) {
       this.kids = num;
     },
     countAdults(num) {
       this.adults = num;
+    },
+    getRoomItem(id) {
+      this.$store.dispatch('roomsModules/getRoomItem', id);
+    },
+    updateDisabledEnd(newVal) {
+      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
     },
     // bookRoom
     bookRoom(id) {
@@ -185,9 +188,6 @@ export default {
         };
         this.$store.dispatch('alertModules/openAlert', alert);
       }
-    },
-    updateDisabledEnd(newVal) {
-      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
     },
   },
   computed: {
@@ -224,8 +224,6 @@ export default {
   created() {
     const vm = this;
     vm.getRoomItem(vm.$route.params.roomId);
-    // 初始化 disabledEnd
-    vm.updateDisabledEnd();
   },
 };
 </script>

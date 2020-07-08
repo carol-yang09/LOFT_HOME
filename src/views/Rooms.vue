@@ -34,6 +34,7 @@
     </div>
 
     <div class="container rooms">
+      <!-- searchInfo -->
       <ul class="search-info" v-if="searchInfo.isShow">
         <li>
           搜尋結果：
@@ -43,6 +44,8 @@
           <a href="#" @click.prevent="resetSearch()">&#215;</a>
         </li>
       </ul>
+
+      <!-- 房型列表 -->
       <div>
         <div class="card" v-for=" room in filterRooms" :key="room.id">
           <router-link :to="`rooms/${room.id}`" class="effect">
@@ -130,15 +133,29 @@ export default {
     };
   },
   methods: {
-    getRooms() {
-      this.$store.dispatch('roomsModules/getRooms');
-    },
     // Count
     countKids(num) {
       this.kids = num;
     },
     countAdults(num) {
       this.adults = num;
+    },
+    getRooms() {
+      const vm = this;
+      // 如果 query 有搜尋資訊
+      if (vm.$route.query.checkIn) {
+        const search = {
+          checkIn: new Date(Number(vm.$route.query.checkIn)),
+          checkOut: new Date(Number(vm.$route.query.checkOut)),
+          sumNum: Number(vm.$route.query.adults) + Number(vm.$route.query.kids),
+        };
+        this.$store.dispatch('roomsModules/getRooms', { form: 'rooms', search });
+      } else {
+        this.$store.dispatch('roomsModules/getRooms', { form: 'rooms' });
+      }
+    },
+    updateDisabledEnd(newVal) {
+      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
     },
     // 訂房 - 跳轉到 checkorder 頁面
     bookRoom(id) {
@@ -154,17 +171,27 @@ export default {
     },
     // 搜尋
     searchRoom() {
+      const vm = this;
       // 取得人數
-      const sumNum = Number(this.adults) + Number(this.kids);
+      const sumNum = Number(vm.adults) + Number(vm.kids);
 
-      if (sumNum > 0 && this.checkIn && this.checkOut) {
+      if (sumNum > 0 && vm.checkIn && vm.checkOut) {
         const searchData = {
-          checkIn: this.checkIn,
-          checkOut: this.checkOut,
+          checkIn: vm.checkIn,
+          checkOut: vm.checkOut,
           sumNum,
-          roomsBooked: this.roomsBooked,
+          roomsBooked: vm.roomsBooked,
         };
-        this.$store.dispatch('searchModules/updateUnavailableRoom', searchData);
+
+        // 如果 query 有搜尋資料
+        if (vm.$route.query.checkIn) {
+          // 跳轉 rooms 頁面
+          vm.$router.push('/rooms');
+          // 重新取得 rooms 頁面資料
+          this.$store.dispatch('roomsModules/getRooms', { form: 'rooms', search: searchData });
+        } else {
+          this.$store.dispatch('searchModules/updateUnavailableRoom', searchData);
+        }
       } else {
         const alert = {
           isShow: true,
@@ -173,9 +200,9 @@ export default {
           to: '',
           status: 'danger',
         };
-        this.$store.dispatch('alertModules/openAlert', alert);
+        vm.$store.dispatch('alertModules/openAlert', alert);
       }
-      this.resetInput();
+      vm.resetInput();
     },
     resetInput() {
       this.checkIn = '';
@@ -183,9 +210,7 @@ export default {
       this.kids = 0;
       this.adults = 0;
     },
-    updateDisabledEnd(newVal) {
-      this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
-    },
+    // 刪除搜尋
     ...mapActions('searchModules', ['resetSearch']),
   },
   computed: {
@@ -219,16 +244,6 @@ export default {
   created() {
     const vm = this;
     vm.getRooms();
-    // 初始化 disabledEnd
-    vm.updateDisabledEnd();
-    if (vm.$route.query.checkIn) {
-      vm.checkIn = new Date(Number(vm.$route.query.checkIn));
-      vm.checkOut = new Date(Number(vm.$route.query.checkOut));
-      vm.adults = vm.$route.query.adults;
-      vm.kids = vm.$route.query.kids;
-
-      vm.searchRoom();
-    }
   },
 };
 </script>

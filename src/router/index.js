@@ -8,9 +8,11 @@ import Rooms from '@/views/Rooms';
 import CheckOrder from '@/views/CheckOrder';
 import Room from '@/views/Room';
 
+import store from '@/store';
+
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   linkExactActiveClass: 'active',
   routes: [
     {
@@ -68,3 +70,14 @@ export default new Router({
     return { x: 0, y: 0 };
   },
 });
+
+// 進入下個頁面前
+router.beforeEach((to, from, next) => {
+  // 清空 calendar 設定
+  store.dispatch('calendarModules/resetCalendar');
+  // 清空 search 設定
+  store.dispatch('searchModules/resetSearch');
+  next();
+});
+
+export default router;
