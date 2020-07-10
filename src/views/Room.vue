@@ -165,20 +165,11 @@ export default {
       this.$store.dispatch('calendarModules/updateDisabledEnd', newVal);
     },
     // bookRoom
-    bookRoom(id) {
+    bookRoom(id, room) {
       const vm = this;
       const sumNum = Number(vm.adults) + Number(vm.kids);
 
-      if (sumNum > 0 && vm.checkIn && vm.checkOut) {
-        vm.$router.push({
-          path: '/checkorder',
-          query: {
-            roomId: id,
-            checkIn: vm.checkIn.getTime(),
-            checkOut: vm.checkOut.getTime(),
-          },
-        });
-      } else {
+      if (sumNum < 0 || vm.checkIn === '' || vm.checkOut === '') {
         const alert = {
           isShow: true,
           title: '錯誤!',
@@ -187,7 +178,32 @@ export default {
           status: 'danger',
         };
         this.$store.dispatch('alertModules/openAlert', alert);
+      } else if (sumNum > room.descriptionShort.GuestMax) {
+        const alert = {
+          isShow: true,
+          title: '錯誤!',
+          content: `${room.name} 最多 ${room.descriptionShort.GuestMax} 人 (包含大人+小孩)，請改訂別的房型，謝謝您！`,
+          to: '',
+          status: 'danger',
+        };
+        this.$store.dispatch('alertModules/openAlert', alert);
+        vm.resetInput();
+      } else {
+        vm.$router.push({
+          path: '/checkorder',
+          query: {
+            roomId: id,
+            checkIn: vm.checkIn.getTime(),
+            checkOut: vm.checkOut.getTime(),
+          },
+        });
       }
+    },
+    resetInput() {
+      this.checkIn = '';
+      this.checkOut = '';
+      this.kids = 0;
+      this.adults = 0;
     },
   },
   computed: {
