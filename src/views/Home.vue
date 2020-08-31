@@ -3,18 +3,9 @@
     <!-- banner -->
     <div class="banner">
       <!-- swiper -->
-      <swiper class="swiper" :options="swiperOption">
-        <swiper-slide>
-          <div class="banner_img banner_img-1"></div>
-        </swiper-slide>
-        <swiper-slide>
-          <div class="banner_img banner_img-2"></div>
-        </swiper-slide>
-        <swiper-slide>
-          <div class="banner_img banner_img-3"></div>
-        </swiper-slide>
-        <swiper-slide>
-          <div class="banner_img banner_img-4"></div>
+      <swiper class="swiper" :options="swiperOption" v-if="rooms.length">
+        <swiper-slide v-for="room in rooms" :key="room.id">
+          <div class="banner_img" :style="{backgroundImage: 'url(' + room.imageUrl + ')'}"></div>
         </swiper-slide>
         <div class="swiper-button-next swiper-button-custom" slot="button-next"></div>
       </swiper>
@@ -236,30 +227,12 @@ export default {
 
 .banner_img {
   min-height: calc(100vh - 5.5rem);
-  background-position: center;
+  background-position: center bottom;
   background-repeat: no-repeat;
   background-size: cover;
   @include mobile-horizontal {
     min-height: calc(100vh - 5rem);
   }
-}
-
-.banner_img-1 {
-  background-image: url('../assets/images/banner_1.jpg');
-}
-
-.banner_img-2 {
-  background-image: url('../assets/images/banner_2.jpg');
-  background-position: bottom;
-}
-
-.banner_img-3 {
-  background-image: url('../assets/images/banner_3.jpg');
-}
-
-.banner_img-4 {
-  background-image: url('../assets/images/banner_4.jpg');
-  background-position: bottom;
 }
 
 .toolbar_wrap {
